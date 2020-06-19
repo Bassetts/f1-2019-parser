@@ -1,0 +1,12 @@
+[package]
+name = "f1-2019-parser"
+version = "1.0.0"
+authors = ["Jason Liquorish <jason@liquori.sh>"]
+edition = "2018"
+
+[dependencies]
+bitflags = "1.2"
+nom = "5.1.1"
+
+[dev-dependencies]
+tokio = { version =  "0.2", features = ["full"] }
