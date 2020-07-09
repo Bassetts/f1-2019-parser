@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use f1_2019_parser::{parse_packet, TelemetryData};
+use f1_2019_parser::{parse_packet, TelemetryData, MAXIMUM_PACKET_SIZE};
 use tokio::net::UdpSocket;
 
 #[tokio::main]
@@ -9,7 +9,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut socket = UdpSocket::bind(&addr).await?;
 
     loop {
-        let mut buf: Vec<u8> = vec![0; 1347];
+        let mut buf: Vec<u8> = vec![0; MAXIMUM_PACKET_SIZE];
         if socket.recv(&mut buf).await? != 0 {
             tokio::spawn(async move {
                 let packet = match parse_packet(&buf) {

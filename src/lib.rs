@@ -16,6 +16,8 @@ use packets::{
 
 use error::ParseError;
 
+pub const MAXIMUM_PACKET_SIZE: usize = 1347;
+
 type ParseResult<'a, O, E = (&'a [u8], ErrorKind)> = IResult<&'a [u8], O, E>;
 
 #[derive(Debug, Copy, Clone)]
