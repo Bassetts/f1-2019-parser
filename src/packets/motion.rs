@@ -1,6 +1,6 @@
 use nom::combinator::map;
 use nom::multi::count;
-use nom::number::complete::{le_f32, le_u16};
+use nom::number::complete::{le_f32, le_i16};
 use nom::sequence::tuple;
 
 use crate::{ParseResult, WheelData};
@@ -31,9 +31,9 @@ impl Coordinates<f32> {
     }
 }
 
-impl Coordinates<u16> {
+impl Coordinates<i16> {
     fn parse(input: &[u8]) -> ParseResult<Self> {
-        map(tuple((le_u16, le_u16, le_u16)), |(x, y, z)| Coordinates {
+        map(tuple((le_i16, le_i16, le_i16)), |(x, y, z)| Coordinates {
             x,
             y,
             z,
@@ -80,8 +80,8 @@ impl RotationalAxes {
 pub struct CarMotionData {
     pub world_position: Coordinates<f32>,
     pub world_velocity: Coordinates<f32>,
-    pub world_forward_dir: Coordinates<u16>,
-    pub world_right_dir: Coordinates<u16>,
+    pub world_forward_dir: Coordinates<i16>,
+    pub world_right_dir: Coordinates<i16>,
     pub g_force: GForce,
     pub rotation: RotationalAxes,
 }
@@ -92,8 +92,8 @@ impl CarMotionData {
             tuple((
                 Coordinates::<f32>::parse,
                 Coordinates::<f32>::parse,
-                Coordinates::<u16>::parse,
-                Coordinates::<u16>::parse,
+                Coordinates::<i16>::parse,
+                Coordinates::<i16>::parse,
                 GForce::parse,
                 RotationalAxes::parse,
             )),

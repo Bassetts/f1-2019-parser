@@ -1,7 +1,7 @@
 use bitflags::bitflags;
 use nom::combinator::{map, map_opt};
 use nom::multi::count;
-use nom::number::complete::{le_f32, le_u16, le_u32, le_u8};
+use nom::number::complete::{le_f32, le_i8, le_u16, le_u32, le_u8};
 use nom::sequence::tuple;
 
 use crate::mappings::SurfaceType;
@@ -39,7 +39,7 @@ pub struct CarTelemetryData {
     pub steer: f32,
     pub brake: f32,
     pub clutch: u8,
-    pub gear: u8,
+    pub gear: i8,
     pub engine_rpm: u16,
     pub drs: u8,
     pub rev_lights_percentage: u8,
@@ -60,7 +60,7 @@ impl CarTelemetryData {
                 le_f32,
                 le_f32,
                 le_u8,
-                le_u8,
+                le_i8,
                 le_u16,
                 le_u8,
                 le_u8,
