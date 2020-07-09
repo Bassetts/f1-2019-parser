@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use f1_2019_parser::{parse_packet, TelemetryData, MAXIMUM_PACKET_SIZE};
+use f1_telemetry_parser::{parse_packet, TelemetryData, MAXIMUM_PACKET_SIZE};
 use tokio::net::UdpSocket;
 
 #[tokio::main]
