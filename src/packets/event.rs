@@ -11,13 +11,35 @@ use crate::ParseResult;
 pub enum EventDataDetails {
     SessionStarted,
     SessionEnded,
-    FastestLap { vehicle_index: u8, lap_time: f32 },
-    Retirement { vehicle_index: u8 },
+    FastestLap {
+        vehicle_index: u8,
+        lap_time: f32,
+    },
+    Retirement {
+        vehicle_index: u8,
+    },
     DRSEnabled,
     DRSDisabled,
-    TeamMateInPits { vehicle_index: u8 },
+    TeamMateInPits {
+        vehicle_index: u8,
+    },
     ChequeredFlag,
-    RaceWinner { vehicle_index: u8 },
+    RaceWinner {
+        vehicle_index: u8,
+    },
+    PenaltyIssued {
+        penalty_type: u8,
+        infringement_type: u8,
+        vehicle_index: u8,
+        other_vehicle_index: u8,
+        time: u8,
+        lap_number: u8,
+        places_gained: u8,
+    },
+    SpeedTrapTriggered {
+        vehicle_index: u8,
+        speed: f32,
+    },
 }
 
 impl EventDataDetails {
@@ -42,6 +64,32 @@ impl EventDataDetails {
             "CHQF" => Ok((input, EventDataDetails::ChequeredFlag)),
             "RCWN" => map(le_u8, |vehicle_index| EventDataDetails::RaceWinner {
                 vehicle_index,
+            })(input),
+            "PENA" => map(
+                tuple((le_u8, le_u8, le_u8, le_u8, le_u8, le_u8, le_u8)),
+                |(
+                    penalty_type,
+                    infringement_type,
+                    vehicle_index,
+                    other_vehicle_index,
+                    time,
+                    lap_number,
+                    places_gained,
+                )| EventDataDetails::PenaltyIssued {
+                    penalty_type,
+                    infringement_type,
+                    vehicle_index,
+                    other_vehicle_index,
+                    time,
+                    lap_number,
+                    places_gained,
+                },
+            )(input),
+            "SPTP" => map(tuple((le_u8, le_f32)), |(vehicle_index, speed)| {
+                EventDataDetails::SpeedTrapTriggered {
+                    vehicle_index,
+                    speed,
+                }
             })(input),
             _ => Err(Err::Error(make_error(
                 input,

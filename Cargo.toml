@@ -1,6 +1,6 @@
 [package]
 name = "f1-telemetry-parser"
-version = "2019.0.0"
+version = "2020.0.0"
 authors = ["Jason Liquorish <jason@liquori.sh>"]
 edition = "2018"
 

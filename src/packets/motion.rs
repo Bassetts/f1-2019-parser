@@ -137,7 +137,7 @@ impl MotionData {
     pub fn parse(input: &[u8]) -> ParseResult<Self> {
         map(
             tuple((
-                count(CarMotionData::parse, 20),
+                count(CarMotionData::parse, 22),
                 WheelSuspensionPositions::parse_f32,
                 WheelVelocities::parse_f32,
                 WheelAccelerations::parse_f32,

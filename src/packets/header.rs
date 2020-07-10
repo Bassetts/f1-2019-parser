@@ -18,6 +18,8 @@ pub enum PacketId {
     CarSetups = 5,
     CarTelemetry = 6,
     CarStatus = 7,
+    FinalClassification = 8,
+    LobbyInfo = 9,
 }
 
 impl PacketId {
@@ -39,6 +41,8 @@ impl TryFrom<u8> for PacketId {
             5 => Ok(PacketId::CarSetups),
             6 => Ok(PacketId::CarTelemetry),
             7 => Ok(PacketId::CarStatus),
+            8 => Ok(PacketId::FinalClassification),
+            9 => Ok(PacketId::LobbyInfo),
             x => Err(format!("Invalid packet id: {}", x)),
         }
     }
@@ -55,6 +59,7 @@ pub struct Header {
     pub session_time: f32,
     pub frame_identifier: u32,
     pub player_car_index: u8,
+    pub secondary_player_car_index: u8,
 }
 
 impl Header {
@@ -70,6 +75,7 @@ impl Header {
                 le_f32,
                 le_u32,
                 le_u8,
+                le_u8,
             )),
             |(
                 packet_format,
@@ -81,6 +87,7 @@ impl Header {
                 session_time,
                 frame_identifier,
                 player_car_index,
+                secondary_player_car_index,
             )| Header {
                 packet_format,
                 game_major_version,
@@ -91,6 +98,7 @@ impl Header {
                 session_time,
                 frame_identifier,
                 player_car_index,
+                secondary_player_car_index,
             },
         )(input)
     }

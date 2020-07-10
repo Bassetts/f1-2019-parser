@@ -1,6 +1,6 @@
 use nom::bytes::complete::{take, take_until};
 use nom::combinator::{flat_map, map, map_res};
-use nom::multi::many1;
+use nom::multi::count;
 use nom::number::complete::le_u8;
 use nom::sequence::tuple;
 
@@ -65,12 +65,16 @@ pub struct ParticipantsData<'a> {
 
 impl<'a> ParticipantsData<'a> {
     pub fn parse(input: &[u8]) -> ParseResult<ParticipantsData> {
-        map(
-            tuple((le_u8, many1(ParticipantData::parse))),
-            |(number_active_cars, participants)| ParticipantsData {
+        let (input, number_active_cars) = le_u8(input)?;
+        let (input, participants) =
+            count(ParticipantData::parse, number_active_cars as usize)(input)?;
+
+        Ok((
+            input,
+            ParticipantsData {
                 number_active_cars,
                 participants,
             },
-        )(input)
+        ))
     }
 }

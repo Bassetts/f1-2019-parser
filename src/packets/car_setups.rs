@@ -3,7 +3,7 @@ use nom::multi::count;
 use nom::number::complete::{le_f32, le_u8};
 use nom::sequence::tuple;
 
-use crate::ParseResult;
+use crate::{ParseResult, WheelData};
 
 #[derive(Debug, Copy, Clone)]
 pub struct CarSetupData {
@@ -23,8 +23,7 @@ pub struct CarSetupData {
     pub rear_suspension_height: u8,
     pub brake_pressure: u8,
     pub brake_bias: u8,
-    pub front_tyre_pressure: f32,
-    pub rear_tyre_pressure: f32,
+    pub tyre_pressures: WheelData<f32>,
     pub ballast: u8,
     pub fuel_load: f32,
 }
@@ -33,8 +32,25 @@ impl CarSetupData {
     fn parse(input: &[u8]) -> ParseResult<CarSetupData> {
         map(
             tuple((
-                le_u8, le_u8, le_u8, le_u8, le_f32, le_f32, le_f32, le_f32, le_u8, le_u8, le_u8,
-                le_u8, le_u8, le_u8, le_u8, le_u8, le_f32, le_f32, le_u8, le_f32,
+                le_u8,
+                le_u8,
+                le_u8,
+                le_u8,
+                le_f32,
+                le_f32,
+                le_f32,
+                le_f32,
+                le_u8,
+                le_u8,
+                le_u8,
+                le_u8,
+                le_u8,
+                le_u8,
+                le_u8,
+                le_u8,
+                WheelData::parse_f32,
+                le_u8,
+                le_f32,
             )),
             |(
                 front_wing,
@@ -53,8 +69,7 @@ impl CarSetupData {
                 rear_suspension_height,
                 brake_pressure,
                 brake_bias,
-                front_tyre_pressure,
-                rear_tyre_pressure,
+                tyre_pressures,
                 ballast,
                 fuel_load,
             )| CarSetupData {
@@ -74,8 +89,7 @@ impl CarSetupData {
                 rear_suspension_height,
                 brake_pressure,
                 brake_bias,
-                front_tyre_pressure,
-                rear_tyre_pressure,
+                tyre_pressures,
                 ballast,
                 fuel_load,
             },
@@ -90,7 +104,7 @@ pub struct PacketCarSetupData {
 
 impl PacketCarSetupData {
     pub fn parse(input: &[u8]) -> ParseResult<PacketCarSetupData> {
-        map(count(CarSetupData::parse, 20), |car_setups| {
+        map(count(CarSetupData::parse, 22), |car_setups| {
             PacketCarSetupData { car_setups }
         })(input)
     }

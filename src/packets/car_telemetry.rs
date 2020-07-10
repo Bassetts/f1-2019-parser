@@ -8,8 +8,8 @@ use crate::mappings::SurfaceType;
 use crate::{ParseResult, WheelData};
 
 type BrakeTemperatures = WheelData<u16>;
-type TyreSurfaceTemperatures = WheelData<u16>;
-type TyreInnerTemperatures = WheelData<u16>;
+type TyreSurfaceTemperatures = WheelData<u8>;
+type TyreInnerTemperatures = WheelData<u8>;
 type TyrePressures = WheelData<f32>;
 type WheelSurfaceTypes = WheelData<SurfaceType>;
 
@@ -65,8 +65,8 @@ impl CarTelemetryData {
                 le_u8,
                 le_u8,
                 BrakeTemperatures::parse_u16,
-                TyreSurfaceTemperatures::parse_u16,
-                TyreInnerTemperatures::parse_u16,
+                TyreSurfaceTemperatures::parse_u8,
+                TyreInnerTemperatures::parse_u8,
                 le_u16,
                 TyrePressures::parse_f32,
                 WheelSurfaceTypes::parse,
@@ -132,18 +132,33 @@ bitflags! {
 pub struct PacketCarTelemetryData {
     pub car_telemetry_data: Vec<CarTelemetryData>,
     pub button_status: ButtonStatus,
+    pub mfd_panel_index: u8,
+    pub mfd_panel_index_secondary_player: u8,
+    pub suggested_gear: i8,
 }
 
 impl PacketCarTelemetryData {
     pub fn parse(input: &[u8]) -> ParseResult<PacketCarTelemetryData> {
         map(
             tuple((
-                count(CarTelemetryData::parse, 20),
+                count(CarTelemetryData::parse, 22),
                 map_opt(le_u32, ButtonStatus::from_bits),
+                le_u8,
+                le_u8,
+                le_i8,
             )),
-            |(car_telemetry_data, button_status)| PacketCarTelemetryData {
+            |(
                 car_telemetry_data,
                 button_status,
+                mfd_panel_index,
+                mfd_panel_index_secondary_player,
+                suggested_gear,
+            )| PacketCarTelemetryData {
+                car_telemetry_data,
+                button_status,
+                mfd_panel_index,
+                mfd_panel_index_secondary_player,
+                suggested_gear,
             },
         )(input)
     }

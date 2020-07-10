@@ -34,6 +34,8 @@ pub enum TrackId {
     SilverstoneShort = 22,
     TexasShort = 23,
     SuzukaShort = 24,
+    Hanoi = 25,
+    Zandvoort = 26,
 }
 
 #[non_exhaustive]
@@ -76,6 +78,8 @@ impl TryFrom<i8> for TrackId {
             22 => Ok(TrackId::SilverstoneShort),
             23 => Ok(TrackId::TexasShort),
             24 => Ok(TrackId::SuzukaShort),
+            25 => Ok(TrackId::Hanoi),
+            26 => Ok(TrackId::Zandvoort),
             _ => Err(InvalidTrackId::new()),
         }
     }
@@ -107,11 +111,11 @@ mod tests {
         let result = TrackId::parse(&packet[..]);
         assert_eq!(result, Ok((&[][..], TrackId::Singapore)));
 
-        let packet = 24i8.to_le_bytes();
+        let packet = 26i8.to_le_bytes();
         let result = TrackId::parse(&packet[..]);
-        assert_eq!(result, Ok((&[][..], TrackId::SuzukaShort)));
+        assert_eq!(result, Ok((&[][..], TrackId::Zandvoort)));
 
-        let packet = 25i8.to_le_bytes();
+        let packet = 27i8.to_le_bytes();
         let result = TrackId::parse(&packet[..]);
         assert_eq!(result, Err(Err::Error((&packet[..], ErrorKind::MapRes))));
     }

@@ -14,7 +14,7 @@ pub enum TeamId {
     Williams = 3,
     RacingPoint = 4,
     Renault = 5,
-    ToroRosso = 6,
+    AlphaTauri = 6,
     Haas = 7,
     McLaren = 8,
     AlfaRomeo = 9,
@@ -60,9 +60,14 @@ pub enum TeamId {
     Prema19 = 49,
     Trident19 = 50,
     Arden19 = 51,
+    Benetton1994 = 53,
+    Benetton1995 = 54,
+    Ferrari2000 = 55,
+    Jordan1991 = 56,
     Ferrari1990 = 63,
     McLaren2010 = 64,
     Ferrari2010 = 65,
+    MyTeam = 255,
 }
 
 #[non_exhaustive]
@@ -85,7 +90,7 @@ impl TryFrom<u8> for TeamId {
             3 => Ok(TeamId::Williams),
             4 => Ok(TeamId::RacingPoint),
             5 => Ok(TeamId::Renault),
-            6 => Ok(TeamId::ToroRosso),
+            6 => Ok(TeamId::AlphaTauri),
             7 => Ok(TeamId::Haas),
             8 => Ok(TeamId::McLaren),
             9 => Ok(TeamId::AlfaRomeo),
@@ -131,9 +136,14 @@ impl TryFrom<u8> for TeamId {
             49 => Ok(TeamId::Prema19),
             50 => Ok(TeamId::Trident19),
             51 => Ok(TeamId::Arden19),
+            53 => Ok(TeamId::Benetton1994),
+            54 => Ok(TeamId::Benetton1995),
+            55 => Ok(TeamId::Ferrari2000),
+            56 => Ok(TeamId::Jordan1991),
             63 => Ok(TeamId::Ferrari1990),
             64 => Ok(TeamId::McLaren2010),
             65 => Ok(TeamId::Ferrari2010),
+            255 => Ok(TeamId::MyTeam),
             _ => Err(InvalidTeamId::new()),
         }
     }
@@ -161,11 +171,19 @@ mod tests {
         let result = TeamId::parse(&packet[..]);
         assert_eq!(result, Ok((&[][..], TeamId::Trident)));
 
-        let packet = 65u8.to_le_bytes();
+        let packet = 56u8.to_le_bytes();
         let result = TeamId::parse(&packet[..]);
-        assert_eq!(result, Ok((&[][..], TeamId::Ferrari2010)));
+        assert_eq!(result, Ok((&[][..], TeamId::Jordan1991)));
 
-        let packet = 66u8.to_le_bytes();
+        let packet = 255u8.to_le_bytes();
+        let result = TeamId::parse(&packet[..]);
+        assert_eq!(result, Ok((&[][..], TeamId::MyTeam)));
+
+        let packet = 57u8.to_le_bytes();
+        let result = TeamId::parse(&packet[..]);
+        assert_eq!(result, Err(Err::Error((&packet[..], ErrorKind::MapRes))));
+
+        let packet = 254u8.to_le_bytes();
         let result = TeamId::parse(&packet[..]);
         assert_eq!(result, Err(Err::Error((&packet[..], ErrorKind::MapRes))));
     }

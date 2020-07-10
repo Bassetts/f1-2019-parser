@@ -10,13 +10,13 @@ mod packets;
 
 use packets::{
     header::{Header, PacketId},
-    EventData, MotionData, PacketCarSetupData, PacketCarStatusData, PacketCarTelemetryData,
-    PacketLapData, ParticipantsData, SessionData,
+    EventData, FinalClassificationsData, LobbyInfoDatas, MotionData, PacketCarSetupData,
+    PacketCarStatusData, PacketCarTelemetryData, PacketLapData, ParticipantsData, SessionData,
 };
 
 use error::ParseError;
 
-pub const MAXIMUM_PACKET_SIZE: usize = 1347;
+pub const MAXIMUM_PACKET_SIZE: usize = 1464;
 
 type ParseResult<'a, O, E = (&'a [u8], ErrorKind)> = IResult<&'a [u8], O, E>;
 
@@ -80,6 +80,8 @@ pub enum TelemetryData<'a> {
     CarSetups(PacketCarSetupData),
     CarTelemetry(PacketCarTelemetryData),
     CarStatus(PacketCarStatusData),
+    FinalClassifications(FinalClassificationsData),
+    LobbyInfos(LobbyInfoDatas<'a>),
 }
 
 #[derive(Debug)]
@@ -106,6 +108,11 @@ impl<'a> Telemetry<'a> {
             PacketId::CarStatus => {
                 map(PacketCarStatusData::parse, TelemetryData::CarStatus)(input)?
             }
+            PacketId::FinalClassification => map(
+                FinalClassificationsData::parse,
+                TelemetryData::FinalClassifications,
+            )(input)?,
+            PacketId::LobbyInfo => map(LobbyInfoDatas::parse, TelemetryData::LobbyInfos)(input)?,
         };
 
         Ok((input, Telemetry { header, data }))

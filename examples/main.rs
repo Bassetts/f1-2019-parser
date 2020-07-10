@@ -42,6 +42,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     TelemetryData::CarStatus(_data) => {
                         println!("CarStatus");
                     }
+                    TelemetryData::FinalClassifications(_data) => {
+                        println!("FinalClassifications");
+                    }
+                    TelemetryData::LobbyInfos(_data) => {
+                        println!("LobbyInfos");
+                    }
                 }
             });
         }

@@ -94,6 +94,8 @@ pub enum Nationality {
     Ukrainian = 84,
     Venezuelan = 85,
     Welsh = 86,
+    Barbadian = 87,
+    Vietnamese = 88,
 }
 
 #[non_exhaustive]
@@ -196,6 +198,8 @@ impl TryFrom<u8> for Nationality {
             84 => Ok(Nationality::Ukrainian),
             85 => Ok(Nationality::Venezuelan),
             86 => Ok(Nationality::Welsh),
+            87 => Ok(Nationality::Barbadian),
+            88 => Ok(Nationality::Vietnamese),
             _ => Err(InvalidNationality::new()),
         }
     }
@@ -223,15 +227,15 @@ mod tests {
         let result = Nationality::parse(&packet[..]);
         assert_eq!(result, Ok((&[][..], Nationality::Japanese)));
 
-        let packet = 86u8.to_le_bytes();
+        let packet = 88u8.to_le_bytes();
         let result = Nationality::parse(&packet[..]);
-        assert_eq!(result, Ok((&[][..], Nationality::Welsh)));
+        assert_eq!(result, Ok((&[][..], Nationality::Vietnamese)));
 
         let packet = 0u8.to_le_bytes();
         let result = Nationality::parse(&packet[..]);
         assert_eq!(result, Err(Err::Error((&packet[..], ErrorKind::MapRes))));
 
-        let packet = 87u8.to_le_bytes();
+        let packet = 89u8.to_le_bytes();
         let result = Nationality::parse(&packet[..]);
         assert_eq!(result, Err(Err::Error((&packet[..], ErrorKind::MapRes))));
     }

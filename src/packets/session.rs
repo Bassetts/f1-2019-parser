@@ -23,6 +23,32 @@ impl MarshalZone {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
+pub struct WeatherForecastSample {
+    pub session_type: SessionType,
+    pub time_offset: u8,
+    pub weather: Weather,
+    pub track_temperature: i8,
+    pub air_temperature: i8,
+}
+
+impl WeatherForecastSample {
+    fn parse(input: &[u8]) -> ParseResult<Self> {
+        map(
+            tuple((SessionType::parse, le_u8, Weather::parse, le_i8, le_i8)),
+            |(session_type, time_offset, weather, track_temperature, air_temperature)| {
+                WeatherForecastSample {
+                    session_type,
+                    time_offset,
+                    weather,
+                    track_temperature,
+                    air_temperature,
+                }
+            },
+        )(input)
+    }
+}
+
 #[derive(Debug)]
 pub struct SessionData {
     weather: Weather,
@@ -44,6 +70,8 @@ pub struct SessionData {
     marshal_zones: Vec<MarshalZone>,
     safety_car_status: SafetyCarStatus,
     network_game: NetworkGame,
+    num_weather_forecast_samples: u8,
+    weather_forecast_samples: Vec<WeatherForecastSample>,
 }
 
 impl SessionData {
@@ -87,13 +115,22 @@ impl SessionData {
             le_u8,
         ))(input)?;
 
-        map(
+        let (input, (marshal_zones, safety_car_status, network_game, num_weather_forecast_samples)) =
             tuple((
                 count(MarshalZone::parse, num_marshal_zones as usize),
                 SafetyCarStatus::parse,
                 NetworkGame::parse,
-            )),
-            move |(marshal_zones, safety_car_status, network_game)| SessionData {
+                le_u8,
+            ))(input)?;
+
+        let (input, weather_forecast_samples) = count(
+            WeatherForecastSample::parse,
+            num_weather_forecast_samples as usize,
+        )(input)?;
+
+        Ok((
+            input,
+            SessionData {
                 weather,
                 track_temperature,
                 air_temperature,
@@ -113,7 +150,9 @@ impl SessionData {
                 marshal_zones,
                 safety_car_status,
                 network_game,
+                num_weather_forecast_samples,
+                weather_forecast_samples,
             },
-        )(input)
+        ))
     }
 }

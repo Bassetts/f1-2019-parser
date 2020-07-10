@@ -44,7 +44,7 @@ checksum = "b486ce3ccf7ffd79fdeb678eac06a9e6c09fc88d33836340becb8fffe87c5e33"
 
 [[package]]
 name = "f1-telemetry-parser"
-version = "2019.0.0"
+version = "2020.0.0"
 dependencies = [
  "bitflags",
  "nom",
