@@ -15,6 +15,7 @@ pub enum ResultStatus {
     Disqualified = 4,
     NotClassified = 5,
     Retired = 6,
+    Dnf = 7,
 }
 
 #[non_exhaustive]
@@ -37,6 +38,7 @@ impl TryFrom<u8> for ResultStatus {
             4 => Ok(ResultStatus::Disqualified),
             5 => Ok(ResultStatus::NotClassified),
             6 => Ok(ResultStatus::Retired),
+            7 => Ok(ResultStatus::Dnf),
             _ => Err(InvalidResultStatus::new()),
         }
     }
@@ -85,6 +87,10 @@ mod tests {
         assert_eq!(result, Ok((&[][..], ResultStatus::Retired)));
 
         let packet = 7u8.to_le_bytes();
+        let result = ResultStatus::parse(&packet[..]);
+        assert_eq!(result, Ok((&[][..], ResultStatus::Dnf)));
+
+        let packet = 8u8.to_le_bytes();
         let result = ResultStatus::parse(&packet[..]);
         assert_eq!(result, Err(Err::Error((&packet[..], ErrorKind::MapRes))));
     }
